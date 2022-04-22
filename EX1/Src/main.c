@@ -20,7 +20,7 @@ int hour=0;
 //this will be the button interrupt function
 char* returnHour(){
     char* toReturn = (char*) malloc(10*sizeof(char));
-	sprintf(toReturn,"%02d:%02d:%02d\n",hour,minute,second);
+	sprintf(toReturn,"%02d:%02d:%02d",hour,minute,second);
 	return toReturn;
 }
 
@@ -115,9 +115,10 @@ int inputTime(char* input){
 
 // ------------------------------------------------------ Button Handler function
 void EXTI15_10_IRQHandler(){
+//	print("%d\n",second);
 	EXTI->PR |= 0x00002000;
 	char* toPrint = returnHour();
-	print(toPrint);
+	print("***\nThe current time is:\t%s\n***\n",toPrint);
 	free(toPrint);
 //	mode++;
 //	mode%=3;
@@ -141,14 +142,10 @@ void EXTI15_10_IRQHandler(){
 
 // ------------------------------------------------------Timer handler function
 void TIM2_IRQHandler(){
-	print("in tim2\n");
-	increaseSec();
-	TIM2->SR&=0XFFFFFFFE;
-	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
+	increaseSec(); // increase time by 1 second
+	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
+//	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
 }
-
-
-
 // ------------------------------------------------------ Main
 int main(void)
 {
@@ -168,10 +165,9 @@ int main(void)
     GPIOA->MODER |= 0x00000400;
     // Configure GPIOA pin 5 as push pull.
     GPIOA->OTYPER &= ~0x00000020; // (1 << 5);
-
-    TIM2->ARR= 4000000; // same as writing TIM2->ARR =0x003D0900
+    TIM2->ARR= 8000000; // same as writing TIM2->ARR =0x003D0900*2 = the timer2 interrupt speed
     TIM2->CR1|=0x00000001;
-
+    NVIC_EnableIRQ(TIM2_IRQn);
     USART2_init();
     print("Hello!\n");
 //    while(1)
