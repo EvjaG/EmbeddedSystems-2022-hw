@@ -1,11 +1,12 @@
 /***************************/
-/* Blinky main file                                                          */
+/* ex1 main file                                                          */
 /* All references to the datasheet are to STM's RM0316, revision 8           */
 /***************************/
-#include "stm32f303xe.h"
 #include <stdio.h>
 #include <string.h>
-#include "usart2.c"
+#include <stdlib.h>
+#include "stm32f303xe.h"
+#include "usart2.h"
 /*
  * 8mhz= 8*(10**6)/sec
  * 4*10**6 = time = 3D0900
@@ -31,8 +32,8 @@ int power(int a,int b){
 }
 //this will be the timer interrupt function
 void increaseSec(){
-	minutePass=0;
-	HourPass=0;
+	int minutePass=0;
+	int hourPass=0;
 	second++;
 	if(second==60){
 		second=0;
@@ -41,7 +42,7 @@ void increaseSec(){
 	if(minutePass){
 		minute++;
 		if(minute==60){
-				second=0;
+				minute=0;
 				hourPass=1;
 		}
 	}
@@ -49,7 +50,6 @@ void increaseSec(){
 			hour++;
 			if(hour==24){
 					hour=0;
-					hourPass=1;
 			}
 		}
 
@@ -60,9 +60,9 @@ void increaseSec(){
 int inputTime(char* input){
 	//parse string - check for correct format
 	int len;
-	colon_count=0;
-	func_count=0;
-	space_count=0;
+	int colon_count=0;
+	int func_count=0;
+	int space_count=0;
 	for (len = 0; input[len] != '\0'; len++){
 		if(input[len]==':') colon_count++;
 		if(input[len]==' ') space_count++;
@@ -73,13 +73,13 @@ int inputTime(char* input){
 		}
 
 	}
-	if(colon_count != 2 || func_count != 1) return;
+	if(colon_count != 2 || func_count != 1) return -1;
 	//if func call not in system
 	if(strstr(input,"-time")==NULL)
-		return 0;
+		return -1;
 
 	//check string inputs
-	char *token = strtok(str, " ");
+	char *token = strtok(input, " ");
 	token = strtok(NULL, ":");
 
 	int j=0;
@@ -109,49 +109,40 @@ int inputTime(char* input){
 	hour=timeArr[0];
 	minute=timeArr[1];
 	second=timeArr[2];
-
+	return 0;
 }
 
 
-
-
-// ------------------------------------------------------initializing global variables
-typedef enum
-{
-    on=2,
-    off=1,
-    blink=0
-} currentMode;
-
-int mode = 0;
-
-
-
 // ------------------------------------------------------ Button Handler function
-void EXTI15_10_IRQHandler(){// 3 modes : x%3 = 0 :off x%3=1 : blinking x%3 = 2 : on
+void EXTI15_10_IRQHandler(){
 	EXTI->PR |= 0x00002000;
-	mode++;
-	mode%=3;
-	currentMode curr = mode;
-	NVIC_DisableIRQ(TIM2_IRQn);// enable interrupt core
-	switch(curr)
-	{
-		case on:
-			GPIOA->ODR |= ~0xFFFFFFDF;
-			break;
-
-		case blink:
-			NVIC_EnableIRQ(TIM2_IRQn);// enable interrupt core
-			break;
-
-		case off:
-			GPIOA->ODR &= 0xFFFFFFDF;
-	}
+	char* toPrint = returnHour();
+	print(toPrint);
+	free(toPrint);
+//	mode++;
+//	mode%=3;
+//	currentMode curr = mode;
+//	NVIC_DisableIRQ(TIM2_IRQn);// enable interrupt core
+//	switch(curr)
+//	{
+//		case on:
+//			GPIOA->ODR |= ~0xFFFFFFDF;
+//			break;
+//
+//		case blink:
+//			NVIC_EnableIRQ(TIM2_IRQn);// enable interrupt core
+//			break;
+//
+//		case off:
+//			GPIOA->ODR &= 0xFFFFFFDF;
+//	}
 }
 
 
 // ------------------------------------------------------Timer handler function
 void TIM2_IRQHandler(){
+	print("in tim2\n");
+	increaseSec();
 	TIM2->SR&=0XFFFFFFFE;
 	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
 }
@@ -181,10 +172,11 @@ int main(void)
     TIM2->ARR= 4000000; // same as writing TIM2->ARR =0x003D0900
     TIM2->CR1|=0x00000001;
 
-
-    while(1)
-    {
-
-    }
+    USART2_init();
+    print("Hello!\n");
+//    while(1)
+//    {
+//
+//    }
 
 }
