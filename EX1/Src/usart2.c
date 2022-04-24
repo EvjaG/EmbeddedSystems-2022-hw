@@ -34,7 +34,7 @@ void USART2_init(void)
     GPIOA->AFR[0] |= 0x00007700;
     USART2->BRR = 833;  // 8 MHz / 9600 baud rate.
     // Enable USART2, TX functionality, RX functionality, RXNE interrupt.
-    USART2->CR1 |= USART_CR1_RXNEIE | USART_CR1_RE | USART_CR1_UE | USART_CR1_TE;
+    USART2->CR1 |= USART_CR1_RXNEIE_Pos | USART_CR1_RE | USART_CR1_UE | USART_CR1_TE;
 }
 
 

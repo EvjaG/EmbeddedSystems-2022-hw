@@ -120,31 +120,22 @@ void EXTI15_10_IRQHandler(){
 	char* toPrint = returnHour();
 	print("***\nThe current time is:\t%s\n***\n",toPrint);
 	free(toPrint);
-//	mode++;
-//	mode%=3;
-//	currentMode curr = mode;
-//	NVIC_DisableIRQ(TIM2_IRQn);// enable interrupt core
-//	switch(curr)
-//	{
-//		case on:
-//			GPIOA->ODR |= ~0xFFFFFFDF;
-//			break;
-//
-//		case blink:
-//			NVIC_EnableIRQ(TIM2_IRQn);// enable interrupt core
-//			break;
-//
-//		case off:
-//			GPIOA->ODR &= 0xFFFFFFDF;
-//	}
 }
-
+//--------------------------------------------------------
+void USART2_EXTI26_IRQHandler(){
+	USART2->ISR&=0XFFFFFFDF;
+	char string[10];
+	int i = 0;
+	print("Recieved %s\n",string);
+	while(!(USART2->RDR & USART2->ISR))
+		string[i++]=(char)USART2->RDR;
+}
 
 // ------------------------------------------------------Timer handler function
 void TIM2_IRQHandler(){
 	increaseSec(); // increase time by 1 second
+	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
 	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
-//	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
 }
 // ------------------------------------------------------ Main
 int main(void)
@@ -166,8 +157,10 @@ int main(void)
     // Configure GPIOA pin 5 as push pull.
     GPIOA->OTYPER &= ~0x00000020; // (1 << 5);
     TIM2->ARR= 8000000; // same as writing TIM2->ARR =0x003D0900*2 = the timer2 interrupt speed
-    TIM2->CR1|=0x00000001;
+    TIM2->CR1|=0x00000001; // TIM2 counter enable
+
     NVIC_EnableIRQ(TIM2_IRQn);
+    NVIC_EnableIRQ(USART2_IRQn);
     USART2_init();
     print("Hello!\n");
 //    while(1)
