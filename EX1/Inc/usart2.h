@@ -5,9 +5,12 @@
  *      Author: elien
  */
 
+#define RX_BUF_SIZE 20
+char RX_BUF[RX_BUF_SIZE];
+int	RX_BUF_PLACE;
 #ifndef USART2_H_
 #define USART2_H_
-
+#include <string.h>
 /******************************************************************************
 Definitions
 ******************************************************************************/

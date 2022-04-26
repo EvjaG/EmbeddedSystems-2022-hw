@@ -5,7 +5,6 @@
 
 
 
-
 // This buffer is used by the printf-like print function.
 static char A_Buffer[USART2_SIZE_OF_PRINT_BUFFER];
 
@@ -34,7 +33,12 @@ void USART2_init(void)
     GPIOA->AFR[0] |= 0x00007700;
     USART2->BRR = 833;  // 8 MHz / 9600 baud rate.
     // Enable USART2, TX functionality, RX functionality, RXNE interrupt.
-    USART2->CR1 |= USART_CR1_RXNEIE_Pos | USART_CR1_RE | USART_CR1_UE | USART_CR1_TE;
+    USART2->CR2 = 0x00000000;//STOP Bit = 1 bit
+    memset(RX_BUF,'\0',RX_BUF_SIZE);
+    RX_BUF_PLACE=0;
+    USART2->CR1 |= USART_CR1_RXNEIE | USART_CR1_RE | USART_CR1_UE | USART_CR1_TE;
+
+
 }
 
 

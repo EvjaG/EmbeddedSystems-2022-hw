@@ -3,10 +3,10 @@
 /* All references to the datasheet are to STM's RM0316, revision 8           */
 /***************************/
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include "stm32f303xe.h"
 #include "usart2.h"
+
 /*
  * 8mhz= 8*(10**6)/sec
  * 4*10**6 = time = 3D0900
@@ -17,14 +17,13 @@ int second=0;
 int minute=0;
 int hour=0;
 
+
 //this will be the button interrupt function
 char* returnHour(){
     char* toReturn = (char*) malloc(10*sizeof(char));
 	sprintf(toReturn,"%02d:%02d:%02d",hour,minute,second);
 	return toReturn;
 }
-
-//find me!
 
 int power(int a,int b){
 	int toReturn=1;
@@ -124,17 +123,27 @@ void EXTI15_10_IRQHandler(){
 	free(toPrint);
 }
 //--------------------------------------------------------
-void USART2_EXTI26_IRQHandler(){
+void USART2_EXTI26_IRQHandler(void){
+
+//	print("\n!!\n");
+//	char string[10];
+//	if((USART2->ISR & (1<<5)) != 0){
+//	while((USART2->ISR & (1<<5)) != 0){
+	while((USART2->ISR & USART_ISR_RXNE)){
+	if(RX_BUF_PLACE >= RX_BUF_SIZE)
+		RX_BUF_PLACE=0;
+	char newChar = (uint8_t)USART2->RDR;
+	if(newChar=='\0')
+		return;
+	RX_BUF[RX_BUF_PLACE++]=newChar;
+
+	}
+	print("\n\rRecieved %s\n",RX_BUF);
 	USART2->ISR&=0XFFFFFFDF;
-	char string[10];
-	int i = 0;
-	print("Recieved %s\n",string);
-	while(!(USART2->RDR & USART2->ISR))
-		string[i++]=(char)USART2->RDR;
 }
 
 // ------------------------------------------------------Timer handler function
-void TIM2_IRQHandler(){
+void TIM2_IRQHandler(void){
 	increaseSec(); // increase time by 1 second
 	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
 	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
@@ -147,7 +156,7 @@ int main(void)
     RCC->APB1ENR |=  0x00000001; // enable TMR2
     RCC->APB2ENR|=  0x00000001; // enable SYSCFG Clock
 // ------------------------------------------------------
-    TIM2->DIER |= 0x00000001; //interrupt enable
+    TIM2->DIER |= 0x00000001; //TIM2 interrupt enable
     EXTI->FTSR |= 0x00002000; // config falling edge GPIOC13
     EXTI->IMR |= 0x00002000; // enable interrupt GPIOC13
 // ------------------------------------------------------
@@ -160,14 +169,15 @@ int main(void)
     GPIOA->OTYPER &= ~0x00000020; // (1 << 5);
     TIM2->ARR= 8000000; // same as writing TIM2->ARR =0x003D0900*2 = the timer2 interrupt speed
     TIM2->CR1|=0x00000001; // TIM2 counter enable
+//    NVIC_EnableIRQ(TIM2_IRQn); //TIM2 interrupt function enable
 
-    NVIC_EnableIRQ(TIM2_IRQn);
-    NVIC_EnableIRQ(USART2_IRQn);
     USART2_init();
-    print("Hello!\n");
-//    while(1)
-//    {
-//
-//    }
+    NVIC_EnableIRQ(USART2_IRQn); //usart2 rx interrupt function enable
+    print("Hello!\nWelcome to our clock timer application!\n");
+    print("Please enter a letter to have it returned to you!\n");
+    while(1)
+    {
+
+    }
 
 }
