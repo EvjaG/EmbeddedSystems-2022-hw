@@ -16,7 +16,7 @@
 int second=0;
 int minute=0;
 int hour=0;
-
+char format[100] = "-time HH:MM:SS";
 
 //this will be the button interrupt function
 char* returnHour(){
@@ -84,7 +84,7 @@ int inputTime(char* input){
 	token = strtok(NULL, ":");
 
 	int j=0;
-	int modArr[3]={60,60,24};
+	int modArr[3]={24,60,60};
 	int timeArr[3]={0,0,0};
 
 	while (token != NULL)
@@ -110,40 +110,32 @@ int inputTime(char* input){
 	hour=timeArr[0];
 	minute=timeArr[1];
 	second=timeArr[2];
-	return 0;
+	return 1;
 }
 
 
 // ------------------------------------------------------ Button Handler function
 void EXTI15_10_IRQHandler(){
-//	print("%d\n",second);
 	EXTI->PR |= 0x00002000;
-	print("\n\rRecieved %s\n",RX_BUF);
 	char* toPrint = returnHour();
-	print("***\nThe current time is:\t%s\n***\n",toPrint);
+	print("%s\n",toPrint);
 	free(toPrint);
 }
 //--------------------------------------------------------
 void USART2_EXTI26_IRQHandler(void){
 
-//	print("\n!!\n");
-//	char string[10];
-//	if((USART2->ISR & (1<<5)) != 0){
-//	while((USART2->ISR & (1<<5)) != 0){
-	while(!(USART2->ISR & USART_ISR_RXNE));
-	while((USART2->ISR & USART_ISR_RXNE)){
 	if(RX_BUF_PLACE >= RX_BUF_SIZE)
 		RX_BUF_PLACE=0;
 	char newChar = (uint8_t)USART2->RDR;
-	if(newChar==(uint8_t)'\0')
-		break;
+	if(newChar==(uint8_t)'\0' || newChar==(uint8_t)'\n' || newChar==(uint8_t)'\r'){
+		if (inputTime(RX_BUF)!=1)
+			print("To change time please input in the following format  it:\t%s\n",format);
+		RX_BUF_PLACE=0;
+		memset(RX_BUF,'\0',RX_BUF_SIZE);
+		return;
+	}
 	RX_BUF[RX_BUF_PLACE++]=newChar;
 
-//	USART2->RQR &= USART_RQR_RXFRQ;
-	}
-//	USART2->ISR&=0XFFFFFFDF;
-
-	RX_BUF_PLACE=0;
 }
 
 // ------------------------------------------------------Timer handler function
@@ -173,12 +165,12 @@ int main(void)
     GPIOA->OTYPER &= ~0x00000020; // (1 << 5);
     TIM2->ARR= 8000000; // same as writing TIM2->ARR =0x003D0900*2 = the timer2 interrupt speed
     TIM2->CR1|=0x00000001; // TIM2 counter enable
-//    NVIC_EnableIRQ(TIM2_IRQn); //TIM2 interrupt function enable
+    NVIC_EnableIRQ(TIM2_IRQn); //TIM2 interrupt function enable
 
     USART2_init();
     NVIC_EnableIRQ(USART2_IRQn); //usart2 rx interrupt function enable
     print("Hello!\nWelcome to our clock timer application!\n");
-    print("Please enter a letter to have it returned to you!\n");
+    print("To change time please input in the following format  it:\t%s\n",format);
     while(1)
     {
 
