@@ -118,6 +118,7 @@ int inputTime(char* input){
 void EXTI15_10_IRQHandler(){
 //	print("%d\n",second);
 	EXTI->PR |= 0x00002000;
+	print("\n\rRecieved %s\n",RX_BUF);
 	char* toPrint = returnHour();
 	print("***\nThe current time is:\t%s\n***\n",toPrint);
 	free(toPrint);
@@ -129,17 +130,20 @@ void USART2_EXTI26_IRQHandler(void){
 //	char string[10];
 //	if((USART2->ISR & (1<<5)) != 0){
 //	while((USART2->ISR & (1<<5)) != 0){
+	while(!(USART2->ISR & USART_ISR_RXNE));
 	while((USART2->ISR & USART_ISR_RXNE)){
 	if(RX_BUF_PLACE >= RX_BUF_SIZE)
 		RX_BUF_PLACE=0;
 	char newChar = (uint8_t)USART2->RDR;
-	if(newChar=='\0')
-		return;
+	if(newChar==(uint8_t)'\0')
+		break;
 	RX_BUF[RX_BUF_PLACE++]=newChar;
 
+//	USART2->RQR &= USART_RQR_RXFRQ;
 	}
-	print("\n\rRecieved %s\n",RX_BUF);
-	USART2->ISR&=0XFFFFFFDF;
+//	USART2->ISR&=0XFFFFFFDF;
+
+	RX_BUF_PLACE=0;
 }
 
 // ------------------------------------------------------Timer handler function
