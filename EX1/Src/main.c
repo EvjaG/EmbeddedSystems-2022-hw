@@ -16,7 +16,7 @@
 int second=0;
 int minute=0;
 int hour=0;
-char format[100] = "-time HH:MM:SS";
+char format[100] = "-time HH:MM:SS\nWhere:\n\t0<=HH<=24\n\t0<=MM<=60\n\t0<=SS<=60";
 
 //this will be the button interrupt function
 char* returnHour(){
@@ -74,7 +74,7 @@ int inputTime(char* input){
 		}
 
 	}
-	if(colon_count != 2 || func_count != 1) return -1;
+	if(colon_count != 2 || func_count != 1 || input[0] != '-') return -1;
 	//if func call not in system
 	if(strstr(input,"-time")==NULL)
 		return -1;
