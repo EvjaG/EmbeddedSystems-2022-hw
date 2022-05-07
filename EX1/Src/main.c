@@ -24,7 +24,7 @@ char* returnHour(){
 	sprintf(toReturn,"%02d:%02d:%02d",hour,minute,second);
 	return toReturn;
 }
-
+// power function
 int power(int a,int b){
 	int toReturn=1;
 	for (int i=0;i<b;i++)
@@ -64,7 +64,7 @@ int inputTime(char* input){
 	int colon_count=0;
 	int func_count=0;
 	int space_count=0;
-	for (len = 0; input[len] != '\0'; len++){
+	for (len = 0; input[len] != '\0'; len++){ // were checking to see what punctual the user used in the hour he put inside
 		if(input[len]==':') colon_count++;
 		if(input[len]==' ') space_count++;
 		if(input[len]=='-'){
@@ -80,16 +80,15 @@ int inputTime(char* input){
 		return -1;
 
 	//check string inputs
-	char *token = strtok(input, " ");
+	char *token = strtok(input, " "); // doin manipulation over the string we recieved. (swaping all the panctual to " ")
 	token = strtok(NULL, ":");
 
 	int j=0;
-	int modArr[3]={24,60,60};
+	int modArr[3]={24,60,60}; // we put each digit in the right place in our array and perfrmoing MOD action to make sure the hour is in bounds
 	int timeArr[3]={0,0,0};
 
 	while (token != NULL)
 	{
-//		printf("String:\t%s\n", token);
         int sum=0;
 		for(int i=0;i<2;i++){
 			int c = token[i];
@@ -115,18 +114,18 @@ int inputTime(char* input){
 
 
 // ------------------------------------------------------ Button Handler function
-void EXTI15_10_IRQHandler(){
+void EXTI15_10_IRQHandler(){ // turning off the interrupt flag
 	EXTI->PR |= 0x00002000;
-	char* toPrint = returnHour();
+	char* toPrint = returnHour(); // printing the current time
 	print("%s\n",toPrint);
 	free(toPrint);
 }
-//--------------------------------------------------------
+//-------------------------------------------------------- handler for input
 void USART2_EXTI26_IRQHandler(void){
 
 	if(RX_BUF_PLACE >= RX_BUF_SIZE)
 		RX_BUF_PLACE=0;
-	char newChar = (uint8_t)USART2->RDR;
+	char newChar = (uint8_t)USART2->RDR; // we read every single char from RDR
 	if(newChar==(uint8_t)'\0' || newChar==(uint8_t)'\n' || newChar==(uint8_t)'\r'){
 		if (inputTime(RX_BUF)!=1)
 			print("To change time please input in the following format  it:\t%s\n",format);
