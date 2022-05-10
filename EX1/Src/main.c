@@ -74,7 +74,7 @@ int inputTime(char* input){
 		}
 
 	}
-	if(colon_count != 2 || func_count != 1 || input[0] != '-') return -1;
+	if(colon_count != 2 || func_count != 1 || input[0] != '-') return -1; // we check if the input stands in the format we want if not we return a msg.
 	//if func call not in system
 	if(strstr(input,"-time")==NULL)
 		return -1;
