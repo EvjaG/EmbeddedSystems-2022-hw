@@ -2,62 +2,25 @@
 /* ex1 main file                                                          */
 /* All references to the datasheet are to STM's RM0316, revision 8           */
 /***************************/
-#include <spi2.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "stm32f303xe.h"
+#include "usart2.h"
+#include "spi2.h"
 
 /*
  * 8mhz= 8*(10**6)/sec
  * 4*10**6 = time = 3D0900
  *
  * */
-
-int second=0;
-int minute=0;
-int hour=0;
-int flip=1;
-int first=0;
-char format[100] = "-time HH:MM:SS\nWhere:\n\t0<=HH<=24\n\t0<=MM<=60\n\t0<=SS<=60";
+char format[100] = "-time HH:MM:SS\nWhere:\n\t0<=HH<=24\n\t0<=MM<60\n\t0<=SS<60";
 
 //this will be the button interrupt function
-char* returnHour(){
+char* returnHour(hour,minute,second){
     char* toReturn = (char*) malloc(10*sizeof(char));
 	sprintf(toReturn,"%02d:%02d:%02d",hour,minute,second);
 	return toReturn;
 }
-
-int power(int a,int b){
-	int toReturn=1;
-	for (int i=0;i<b;i++)
-		toReturn*=a;
-	return toReturn;
-}
-//this will be the timer interrupt function
-void increaseSec(){
-	int minutePass=0;
-	int hourPass=0;
-	second++;
-	if(second==60){
-		second=0;
-		minutePass=1;
-	}
-	if(minutePass){
-		minute++;
-		if(minute==60){
-				minute=0;
-				hourPass=1;
-		}
-	}
-	if(hourPass){
-			hour++;
-			if(hour==24){
-					hour=0;
-			}
-		}
-
-}
-
 //this will be the function from reading the input from the user
 //return 0 if fail, otherwise return 1
 int inputTime(char* input){
@@ -109,9 +72,10 @@ int inputTime(char* input){
 		j++;
 	}
 	//if no errors, change time vars accordingly
-	hour=timeArr[0];
-	minute=timeArr[1];
-	second=timeArr[2];
+
+	/* TODO - output time to secondary system to change it!*/
+
+
 	return 1;
 }
 
@@ -119,11 +83,12 @@ int inputTime(char* input){
 // ------------------------------------------------------ Button Handler function
 void EXTI15_10_IRQHandler(){
 	EXTI->PR |= 0x00002000;
+	// TODO - function to retrieve time from secondary machine
 	char* toPrint = returnHour();
 	print("%s\n",toPrint);
 	free(toPrint);
 }
-//--------------------------------------------------------
+//--------------------------------------------------------UART input handler function
 void USART2_EXTI26_IRQHandler(void){
 
 	if(RX_BUF_PLACE >= RX_BUF_SIZE)
@@ -142,10 +107,7 @@ void USART2_EXTI26_IRQHandler(void){
 
 // ------------------------------------------------------Timer handler function
 void TIM2_IRQHandler(void){
-	flip^=1; // for full-second check
-	if(first && flip) //if we've been to the function at least once
-		increaseSec(); // increase time by 1 second
-	first = 1; //indicate we've visited function at least once
+//	increaseSec(); // increase time by 1 second
 	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
 	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
 }
@@ -168,12 +130,14 @@ int main(void)
     GPIOA->MODER |= 0x00000400;
     // Configure GPIOA pin 5 as push pull.
     GPIOA->OTYPER &= ~0x00000020; // (1 << 5);
-    TIM2->ARR= 8000000/2; // same as writing TIM2->ARR =0x003D0900 = the timer2 interrupt speed
+    TIM2->ARR= 8000000; // same as writing TIM2->ARR =0x003D0900*2 = the timer2 interrupt speed
     TIM2->CR1|=0x00000001; // TIM2 counter enable
     NVIC_EnableIRQ(TIM2_IRQn); //TIM2 interrupt function enable
 
-    SPI2_init();
-    print("Hello!\nThis is the secondary machine in the 2-machine exercise you are running!\n");
+    USART2_init();
+    NVIC_EnableIRQ(USART2_IRQn); //usart2 rx interrupt function enable
+    print("Hello!\nThis is the primary machine in the 2-machine exercise you are running!\n");
+    print("To change time please input in the following format  it:\t%s\n",format);
     while(1)
     {
 

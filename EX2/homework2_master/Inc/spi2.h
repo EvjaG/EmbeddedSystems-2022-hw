@@ -5,13 +5,13 @@
  *      Author: elien
  */
 
-#ifndef USART2_H_
-#define USART2_H_
+#ifndef SPI2_H_
+#define SPI2_H_
 #include <string.h>
 /******************************************************************************
 Definitions
 ******************************************************************************/
-#define USART2_SIZE_OF_PRINT_BUFFER 128
+#define SPI2_SIZE_OF_SPI_BUFFER 128
 
 
 
@@ -27,7 +27,7 @@ Note:
   This function uses a buffer, whose size is determined by USART2_SIZE_OF_
   PRINT_BUFFER. Therefore, it is not reentrant.
 ******************************************************************************/
-void print(char *p_format, ...);
+void send(char *p_format, ...);
 
 /******************************************************************************
 USART2_init
@@ -52,4 +52,4 @@ Input:
 ******************************************************************************/
 void USART2_printCharacter(char c);
 
-#endif /* USART2_H_ */
+#endif /* SPI2_H_ */
