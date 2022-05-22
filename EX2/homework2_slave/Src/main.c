@@ -2,7 +2,7 @@
 /* ex1 main file                                                          */
 /* All references to the datasheet are to STM's RM0316, revision 8           */
 /***************************/
-#include <spi2.h>
+#include <spi1.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "stm32f303xe.h"
@@ -157,9 +157,11 @@ int main(void)
     RCC->APB1ENR |=  0x00000001; // enable TMR2
     RCC->APB2ENR|=  0x00000001; // enable SYSCFG Clock
 // ------------------------------------------------------
-    TIM2->DIER |= 0x00000001; //TIM2 interrupt enable
+    TIM2->DIER |= 0x00000001;  //TIM2 interrupt enable
     EXTI->FTSR |= 0x00002000; // config falling edge GPIOC13
     EXTI->IMR |= 0x00002000; // enable interrupt GPIOC13
+    GPIOA->MODER |= 0xFFFC; //
+
 // ------------------------------------------------------
     SYSCFG->EXTICR[3] |= 0x00000020;
     NVIC_EnableIRQ(EXTI15_10_IRQn); // enable button - core interrupt
@@ -172,7 +174,7 @@ int main(void)
     TIM2->CR1|=0x00000001; // TIM2 counter enable
     NVIC_EnableIRQ(TIM2_IRQn); //TIM2 interrupt function enable
 
-    SPI2_init();
+    SPI1_init();
     print("Hello!\nThis is the secondary machine in the 2-machine exercise you are running!\n");
     while(1)
     {

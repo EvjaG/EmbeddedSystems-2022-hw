@@ -5,13 +5,13 @@
  *      Author: elien
  */
 
-#ifndef SPI2_H_
-#define SPI2_H_
+#ifndef SPI1_H_
+#define SPI1_H_
 #include <string.h>
 /******************************************************************************
 Definitions
 ******************************************************************************/
-#define SPI2_SIZE_OF_SPI_BUFFER 128
+#define SPI1_SIZE_OF_SPI_BUFFER 128
 
 
 
@@ -52,4 +52,4 @@ Input:
 ******************************************************************************/
 void USART2_printCharacter(char c);
 
-#endif /* SPI2_H_ */
+#endif /* SPI1_H_ */

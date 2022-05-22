@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "stm32f303xe.h"
 #include "usart2.h"
-#include "spi2.h"
+#include "spi1.h"
 
 /*
  * 8mhz= 8*(10**6)/sec
@@ -135,7 +135,7 @@ int main(void)
     NVIC_EnableIRQ(TIM2_IRQn); //TIM2 interrupt function enable
 
     USART2_init();
-	SPI2_init();
+	SPI1_init();
     NVIC_EnableIRQ(USART2_IRQn); //usart2 rx interrupt function enable
     print("Hello!\nThis is the primary machine in the 2-machine exercise you are running!\n");
     print("To change time please input in the following format  it:\t%s\n",format);

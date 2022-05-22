@@ -33,34 +33,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := EX1
+BUILD_ARTIFACT_NAME := homework2_master
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-EX1.elf \
+homework2_master.elf \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-EX1.list \
+homework2_master.list \
 
 OBJCOPY_BIN += \
-EX1.bin \
+homework2_master.bin \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: EX1.elf secondary-outputs
+main-build: homework2_master.elf secondary-outputs
 
 # Tool invocations
-EX1.elf: $(OBJS) $(USER_OBJS) D:\GIT\EmbeddedSystems-2022-hw\EX1\STM32F303RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "EX1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\GIT\EmbeddedSystems-2022-hw\EX1\STM32F303RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="EX1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+homework2_master.elf: $(OBJS) $(USER_OBJS) D:\GIT\EmbeddedSystems-2022-hw\EX2\homework2_master\STM32F303RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "homework2_master.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\GIT\EmbeddedSystems-2022-hw\EX2\homework2_master\STM32F303RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="homework2_master.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -69,19 +69,19 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-EX1.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "EX1.list"
+homework2_master.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "homework2_master.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-EX1.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "EX1.bin"
+homework2_master.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "homework2_master.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) EX1.bin EX1.elf EX1.list default.size.stdout
+	-$(RM) default.size.stdout homework2_master.bin homework2_master.elf homework2_master.list
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
