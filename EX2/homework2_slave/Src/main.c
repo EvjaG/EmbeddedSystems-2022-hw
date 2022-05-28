@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "stm32f303xe.h"
 #include "usart2.h"
+#include "spi1.h"
 
 /*
  * 8mhz= 8*(10**6)/sec
@@ -134,8 +135,31 @@ void TIM2_IRQHandler(void){
 	}
 	first = 1; //indicate we've visited function at least once
 	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
+
+	/// to delete{
+	char* time = returnHour();
+	SPI_Transmit(time,8);
+
+	//}
+
+
 	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
+
+
 }
+
+//// ------------------------------------------------------Timer handler function
+//void SPI1_IRQHandler(void){
+//	flip^=1; // for full-second check
+//	if(first && flip){
+//		//if we've been to the function at least once
+//		increaseSec(); // increase time by 1 second
+//		motdet=1;
+//	}
+//	first = 1; //indicate we've visited function at least once
+//	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
+//	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
+//}
 // ------------------------------------------------------ Main
 int main(void)
 {
@@ -165,8 +189,11 @@ int main(void)
     NVIC_EnableIRQ(TIM2_IRQn); //TIM2 interrupt function enable
     NVIC_EnableIRQ(EXTI15_10_IRQn); //TIM2 interrupt function enable
 
+    NVIC_EnableIRQ(SPI1_IRQn);
+
     GPIOA->IDR=0;
 
+    SPI1_init();
     USART2_init();
 
 //    SPI1_init();
@@ -175,9 +202,7 @@ int main(void)
     {
     	if((GPIOA->IDR & 0x00000002) && motdet){
     		print("MotDet ON!");
-    		motdet=0;
-
-
+			motdet=0;
     	}
 
     }

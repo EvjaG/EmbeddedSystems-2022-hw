@@ -62,4 +62,10 @@ Input:
 ******************************************************************************/
 void SPI1_send(const char *p_data);
 
+
+void SPI_Transmit (char *data, int size);
+
+
+void SPI_Receive (char *data, int size);
+
 #endif /* SPI1_H_ */
