@@ -60,7 +60,7 @@ Description: send all chars to master.
 Input:
   c: The character to print.
 ******************************************************************************/
-void SPI1_send(const char *p_data);
+//void SPI1_send(const char *p_data);
 
 
 void SPI_Transmit (char *data, int size);

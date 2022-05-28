@@ -196,13 +196,13 @@ int main(void)
     SPI1_init();
 //    NVIC_EnableIRQ(SPI1_IRQn);
 
-//    SPI1_init();
     print("Hello!\nThis is the secondary machine in the 2-machine exercise you are running!\n");
     while(1)
     {
     	if((GPIOA->IDR & 0x00000002)){
     		while(!motdet);
     		print("MotDet ON!");
+    		SPI_Transmit(returnHour(), 8);
 			motdet=0;
     	}
 

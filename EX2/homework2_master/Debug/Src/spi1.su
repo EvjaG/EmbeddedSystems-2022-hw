@@ -1,0 +1,3 @@
+spi1.c:36:6:SPI1_init	8	static
+spi1.c:81:6:SPI_Transmit	24	static
+spi1.c:115:6:SPI_Receive	16	static

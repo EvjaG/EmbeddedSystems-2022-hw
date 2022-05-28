@@ -10,27 +10,27 @@
 int pointer = 0;
 int A_Buffer_PLACE=0;
 
-void SPI1_send(const char *p_data)
-{
-//	while(*p_data != '\0')
-//	{
-//		USART2->TDR = *p_data;
-//        p_data++;
-//        while(!(USART2->ISR & 0x00000080));
-//	}
-	//todo
-	return;
-}
-
-void send(char *p_format, ...)
-{
-	va_list p_variables;
-	va_start(p_variables, p_format);
-	(void)vsprintf(SPI_A_Buffer, p_format, p_variables);
-    SPI1_send(SPI_A_Buffer);
-}
-
-
+//void SPI1_send(const char *p_data)
+//{
+////	while(*p_data != '\0')
+////	{
+////		USART2->TDR = *p_data;
+////        p_data++;
+////        while(!(USART2->ISR & 0x00000080));
+////	}
+//	//todo
+//	return;
+//}
+//
+//void send(char *p_format, ...)
+//{
+//	va_list p_variables;
+//	va_start(p_variables, p_format);
+//	(void)vsprintf(SPI_A_Buffer, p_format, p_variables);
+//    SPI1_send(SPI_A_Buffer);
+//}
+//
+//
 
 
 void SPI1_init(void)
