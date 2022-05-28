@@ -40,7 +40,7 @@ void SPI1_init(void)
 	memset(SPI_B_Buffer,'\0',SPI1_SIZE_OF_SPI_BUFFER);
 	*SPI_B_Buffer='\0';
 
-	RCC->AHBENR |= (1<<0);  // Enable GPIO Clock
+//	RCC->AHBENR |= (1<<0);  // Enable GPIO Clock
 
 	//APB1 - page 152
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;// Enable SPI1 CLock
