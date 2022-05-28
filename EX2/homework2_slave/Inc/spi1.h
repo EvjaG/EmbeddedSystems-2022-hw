@@ -1,9 +1,10 @@
 /*
- * usart2.h
+ * spi2.h
  *
  *  Created on: Mar 17, 2021
  *      Author: elien
  */
+
 
 #ifndef SPI1_H_
 #define SPI1_H_
@@ -12,7 +13,8 @@
 Definitions
 ******************************************************************************/
 #define SPI1_SIZE_OF_SPI_BUFFER 128
-
+static char SPI_A_Buffer[SPI1_SIZE_OF_SPI_BUFFER];
+static char SPI_B_Buffer[SPI1_SIZE_OF_SPI_BUFFER];
 
 
 
@@ -24,32 +26,40 @@ Exported functions
 print
 Description: Functions as the stdio printf function.
 Note:
-  This function uses a buffer, whose size is determined by USART2_SIZE_OF_
+  This function uses a buffer, whose size is determined by spi2_SIZE_OF_
   PRINT_BUFFER. Therefore, it is not reentrant.
 ******************************************************************************/
 void send(char *p_format, ...);
 
 /******************************************************************************
-USART2_init
-Description: Initializes USART2 on GPIOs PA2 and PA3,
+spi2_init
+Description: Initializes spi2 on GPIOs PA2 and PA3,
   with a baud rate of 9600.
 ******************************************************************************/
-void USART2_init(void);
+void SPI1_init(void);
 
 /******************************************************************************
-USART2_print
+spi2_print
 Description: Prints a '\0'-terminated sequence of characters.
 Input:
   p_data: The sequence to print.
 ******************************************************************************/
-void USART2_print(const char *p_data);
+void SPI1_print(const char *p_data);
 
 /******************************************************************************
-USART2_printCharacter
+spi2_printCharacter
 Description: Prints one character.
 Input:
   c: The character to print.
 ******************************************************************************/
-void USART2_printCharacter(char c);
+void SPI1_printCharacter(char c);
+
+/******************************************************************************
+SPI1_send
+Description: send all chars to master.
+Input:
+  c: The character to print.
+******************************************************************************/
+void SPI1_send(const char *p_data);
 
 #endif /* SPI1_H_ */

@@ -6,18 +6,28 @@
 
 
 // This buffer is used by the printf-like print function.
-static char A_Buffer[SPI2_SIZE_OF_SPI_BUFFER];
-static char B_Buffer[SPI2_SIZE_OF_SPI_BUFFER];
+
 int pointer = 0;
+int A_Buffer_PLACE=0;
 
-
+void SPI1_send(const char *p_data)
+{
+//	while(*p_data != '\0')
+//	{
+//		USART2->TDR = *p_data;
+//        p_data++;
+//        while(!(USART2->ISR & 0x00000080));
+//	}
+	//todo
+	return;
+}
 
 void send(char *p_format, ...)
 {
 	va_list p_variables;
 	va_start(p_variables, p_format);
-	(void)vsprintf(A_Buffer, p_format, p_variables);
-    SPI1_send(A_Buffer);
+	(void)vsprintf(SPI_A_Buffer, p_format, p_variables);
+    SPI1_send(SPI_A_Buffer);
 }
 
 
@@ -26,8 +36,9 @@ void send(char *p_format, ...)
 void SPI1_init(void)
 {
 	//TODO - initialize SPI values (page 962 of user manual)
-	memset(A_Buffer,'\0',SPI1_SIZE_OF_SPI_BUFFER);
-	memset(B_Buffer,'\0',SPI1_SIZE_OF_SPI_BUFFER);
+	memset(SPI_A_Buffer,'\0',SPI1_SIZE_OF_SPI_BUFFER);
+	memset(SPI_B_Buffer,'\0',SPI1_SIZE_OF_SPI_BUFFER);
+	*SPI_B_Buffer='\0';
 
 	//APB1 - page 152
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
@@ -42,13 +53,3 @@ void SPI1_init(void)
 
 
 
-void SPI1_send(const char *p_data)
-{
-//	while(*p_data != '\0')
-//	{
-//		USART2->TDR = *p_data;
-//        p_data++;
-//        while(!(USART2->ISR & 0x00000080));
-//	}
-	//todo
-}
