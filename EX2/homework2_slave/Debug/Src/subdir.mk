@@ -7,17 +7,20 @@
 C_SRCS += \
 ../Src/main.c \
 ../Src/motion_detector.c \
-../Src/spi1.c 
+../Src/spi1.c \
+../Src/usart2.c 
 
 OBJS += \
 ./Src/main.o \
 ./Src/motion_detector.o \
-./Src/spi1.o 
+./Src/spi1.o \
+./Src/usart2.o 
 
 C_DEPS += \
 ./Src/main.d \
 ./Src/motion_detector.d \
-./Src/spi1.d 
+./Src/spi1.d \
+./Src/usart2.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -27,7 +30,7 @@ Src/%.o: ../Src/%.c Src/subdir.mk
 clean: clean-Src
 
 clean-Src:
-	-$(RM) ./Src/main.d ./Src/main.o ./Src/motion_detector.d ./Src/motion_detector.o ./Src/spi1.d ./Src/spi1.o
+	-$(RM) ./Src/main.d ./Src/main.o ./Src/motion_detector.d ./Src/motion_detector.o ./Src/spi1.d ./Src/spi1.o ./Src/usart2.d ./Src/usart2.o
 
 .PHONY: clean-Src
 
