@@ -73,7 +73,7 @@ int main(void)
     EXTI->IMR |= 0x00002000; // enable interrupt GPIOC13
 // ------------------------------------------------------
     SYSCFG->EXTICR[3] |= 0x00000020;
-    NVIC_EnableIRQ(EXTI15_10_IRQn); // enable button - core interrupt
+//    NVIC_EnableIRQ(EXTI15_10_IRQn); // enable button - core interrupt
 // ------------------------------------------------------
     // Configure GPIOA pin 5 as output.
     GPIOA->MODER |= 0x00000400;

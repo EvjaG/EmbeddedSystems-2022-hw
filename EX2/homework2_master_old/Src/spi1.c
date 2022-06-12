@@ -40,30 +40,35 @@ void SPI1_init(void)
 	memset(SPI_B_Buffer,'\0',SPI1_SIZE_OF_SPI_BUFFER);
 	*SPI_B_Buffer='\0';
 
-//	RCC->AHBENR |= (1<<0);  // Enable GPIO Clock
+	RCC->AHBENR |= (1<<0);  // Enable GPIO Clock
 
 	//APB1 - page 152
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;// Enable SPI1 CLock
+//
+//	//CR1 - page 998
+//	SPI1->CR1 |= SPI_CR1_MSTR | SPI_CR1_CPHA | SPI_CR1_BR_2 | SPI_CR1_BR_1 | SPI_CR1_BR_0; //master //CPHA on, BR = 111
+//	SPI1->CR1 &= ~SPI_CR1_BIDIMODE; //not Bidirectional data mode enable
+//
+//
+//	SPI1->CR1 &= ~(1<<11);  // DFF=0, 8 bit data
+//	SPI1->CR1 |= (1<<6);   // SPE=1, Peripheral enabled
+//
+//	SPI1->CR2 = 0;  // reset CR2
+//	//CR2 - page 1000
+//	//SPI_CR2_TXEIE -> Tx buffer Empty Interrupt Enable
+//	//SPI_CR2_RXNEIE -> RX buffer Not Empty Interrupt Enable
+//	//SPI_CR2_DS_0|SPI_CR2_DS_1|SPI_CR2_DS_2 -> 0111: 8-bit Data size
+//	//SPI_CR2_FRXTH -> FIFO reception Threshold
+//	SPI1->CR2 |= SPI_CR2_TXEIE| SPI_CR2_RXNEIE | SPI_CR2_DS_0 |SPI_CR2_DS_1 | SPI_CR2_DS_2 | SPI_CR2_FRXTH;
 
-	//CR1 - page 998
-	SPI1->CR1 |= SPI_CR1_MSTR | SPI_CR1_CPHA | SPI_CR1_BR_2 | SPI_CR1_BR_1 | SPI_CR1_BR_0; //master //CPHA on, BR = 111
-	SPI1->CR1 &= ~SPI_CR1_BIDIMODE; //not Bidirectional data mode enable
+	SPI1->CR2 |= 0x000000004;
+	SPI1->CR1 |= 0x00000007C;
 
 
-	SPI1->CR1 &= ~(1<<11);  // DFF=0, 8 bit data
-	SPI1->CR1 |= (1<<6);   // SPE=1, Peripheral enabled
-
-	SPI1->CR2 = 0;  // reset CR2
-	//CR2 - page 1000
-	//SPI_CR2_TXEIE -> Tx buffer Empty Interrupt Enable
-	//SPI_CR2_RXNEIE -> RX buffer Not Empty Interrupt Enable
-	//SPI_CR2_DS_0|SPI_CR2_DS_1|SPI_CR2_DS_2 -> 0111: 8-bit Data size
-	//SPI_CR2_FRXTH -> FIFO reception Threshold
-	SPI1->CR2 |= SPI_CR2_TXEIE| SPI_CR2_RXNEIE | SPI_CR2_DS_0 |SPI_CR2_DS_1 | SPI_CR2_DS_2 | SPI_CR2_FRXTH;
-
-
-	GPIOA->MODER |= 0x0000AA00; // Configure GPIOA pins 4,5,6,7  as alternate function 5, which is SPI1.
-	GPIOA->AFR[0] |= (5<<16)|(5<<20)|(5<<24)|(5<<28);// AF5(SPI1) for PA4,PA5, PA6, PA7
+	GPIOA->MODER |= 0x0000A200; // Configure GPIOA pins 4,6,7  as alternate function 5, which is SPI1.
+	GPIOA->AFR[0] |= (5<<16)|(5<<24)|(5<<28);// AF5(SPI1) for PA4, PA6, PA7
+	GPIOB->MODER |= 0x00000020; // Configure GPIOA pins 4,6,7  as alternate function 5, which is SPI1.
+	GPIOB->AFR[0] |= (5<<12);// AF5(SPI1) for PA4, PA6, PA7
 //	GPIOA->CRL |= (11U<<20);   // PA5 (SCK) AF output Push Pull
 //	GPIOA->CRL |= (11U<<28);   // PA7 (MOSI) AF output Push Pull
 //	GPIOA->CRL |= (1<<26);    // PA6 (MISO) Input mode (floating)
@@ -91,8 +96,10 @@ void SPI_Transmit (char *data, int size)
 	int i=0;
 	while (i<size)
 	{
-	   while (!((SPI1->SR)&(1<<1))) {};  // wait for TXE bit to set -> This will indicate that the buffer is empty
 	   SPI1->DR = data[i];  // load the data into the Data Register
+	   while (!((SPI1->SR)&(1<<1))) {};  // wait for TXE bit to set -> This will indicate that the buffer is empty
+//	   SPI1->DR = data[i];  // load the data into the Data Register
+	   uint8_t temp = SPI1->DR;
 	   i++;
 	}
 
@@ -101,13 +108,13 @@ void SPI_Transmit (char *data, int size)
 write operation to the SPI_DR register and BSY bit setting. As a consequence it is
 mandatory to wait first until TXE is set and then until BSY is cleared after writing the last
 data.
-*/
-	while (!((SPI1->SR)&(1<<1))) {};  // wait for TXE bit to set -> This will indicate that the buffer is empty
-	while (((SPI1->SR)&(1<<7))) {};  // wait for BSY bit to Reset -> This will indicate that SPI is not busy in communication
-
-	//  Clear the Overrun flag by reading DR and SR
-	uint8_t temp = SPI1->DR;
-	temp = SPI1->SR;
+//*/
+//	while (!((SPI1->SR)&(1<<1))) {};  // wait for TXE bit to set -> This will indicate that the buffer is empty
+//	while (((SPI1->SR)&(1<<7))) {};  // wait for BSY bit to Reset -> This will indicate that SPI is not busy in communication
+//
+//	//  Clear the Overrun flag by reading DR and SR
+//	uint8_t temp = SPI1->DR;
+//	temp = SPI1->SR;
 
 }
 

@@ -190,7 +190,7 @@ int main(void)
     TIM2->ARR= 8000000/2; // same as writing TIM2->ARR =0x003D0900*2 = the timer2 interrupt speed
     TIM2->CR1|=0x00000001; // TIM2 counter enable
     NVIC_EnableIRQ(TIM2_IRQn); //TIM2 interrupt function enable
-    NVIC_EnableIRQ(EXTI15_10_IRQn); //TIM2 interrupt function enable
+//    NVIC_EnableIRQ(EXTI15_10_IRQn); //TIM2 interrupt function enable
 
 
     GPIOA->IDR=0;
