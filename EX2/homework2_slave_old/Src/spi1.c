@@ -66,7 +66,7 @@ void SPI1_init(void)
 
 	GPIOA->MODER |= 0x0000A200; // Configure GPIOA pins 4,6,7  as alternate function 5, which is SPI1.
 	GPIOA->AFR[0] |= (5<<16)|(5<<24)|(5<<28);// AF5(SPI1) for PA4, PA6, PA7
-	GPIOB->MODER |= 0x00000020; // Configure GPIOA pins 4,6,7  as alternate function 5, which is SPI1.
+	GPIOB->MODER |= 0x00000080; // Configure GPIOB pins 3  as alternate function 5, which is SPI1.
 	GPIOB->AFR[0] |= (5<<12);// AF5(SPI1) for PA4, PA6, PA7
 
 	GPIOA->MODER &= 0xFFFFAAFF;
@@ -87,7 +87,7 @@ void SPI_Transmit (char *data, int size)
 	while (i<size)
 	{
 	   SPI1->DR = data[i];  // load the data into the Data Register
-//	   while (!((SPI1->SR)&(1<<1))) {};  // wait for TXE bit to set -> This will indicate that the buffer is empty
+	   while (!((SPI1->SR)&(1<<1))) {};  // wait for TXE bit to set -> This will indicate that the buffer is empty
 //	   SPI1->DR = data[i];  // load the data into the Data Register
 	   uint8_t temp = SPI1->DR;
 	   i++;
@@ -140,7 +140,7 @@ void SPI_Receive (char *data, int size)
 		while (((SPI1->SR)&(1<<7))) {};  // wait for BSY bit to Reset -> This will indicate that SPI is not busy in communication
 		SPI1->DR = 0;  // send dummy data
 		while (!((SPI1->SR) &(1<<0))){};  // Wait for RXNE to set -> This will indicate that the Rx buffer is not empty
-	  *data++ = (SPI1->DR);
+	    *data++ = (SPI1->DR);
 		size--;
 	}
 }

@@ -29,14 +29,14 @@ int inputTime(char* input){
 }
 
 
-// ------------------------------------------------------ Button Handler function
-void EXTI15_10_IRQHandler(){
-	EXTI->PR |= 0x00002000;
-	// TODO - function to retrieve time from secondary machine
-	char* toPrint = returnHour();
-	print("%s\n",toPrint);
-	free(toPrint);
-}
+//// ------------------------------------------------------ Button Handler function
+//void EXTI15_10_IRQHandler(){
+//	EXTI->PR |= 0x00002000;
+//	// TODO - function to retrieve time from secondary machine
+//	char* toPrint = returnHour();
+//	print("%s\n",toPrint);
+//	free(toPrint);
+//}
 //--------------------------------------------------------UART input handler function
 void USART2_EXTI26_IRQHandler(void){
 
@@ -64,7 +64,7 @@ void USART2_EXTI26_IRQHandler(void){
 int main(void)
 {
     // Enable GPIOA clock (p. 148 in the datasheet)
-    RCC->AHBENR |=0x000A0000;
+    RCC->AHBENR |=0x000E0000;
     RCC->APB1ENR |=  0x00000001; // enable TMR2
     RCC->APB2ENR|=  0x00000001; // enable SYSCFG Clock
 // ------------------------------------------------------
@@ -92,10 +92,13 @@ int main(void)
     while(1)
     {
     	memset(timeFromSlave,'\0',9);
-		SPI_Receive(timeFromSlave,8);
-		if(timeFromSlave[0] != '\0'){
-			print("%s\n",timeFromSlave);
-		}
+    	if(!((SPI1->SR) &(1<<0))){
+    		SPI_Receive(timeFromSlave,8);
+			if(timeFromSlave[0] != '\0'){
+				print("%s\n",timeFromSlave);
+			}
+			SPI1->SR & (0<<0);
+    	}
     }
 
 }

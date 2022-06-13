@@ -152,22 +152,22 @@ void TIM2_IRQHandler(void){
 }
 
 //// ------------------------------------------------------Timer handler function
-void SPI1_IRQHandler(void){
-	flip^=1; // for full-second check
-	if(first && flip){
-		//if we've been to the function at least once
-		increaseSec(); // increase time by 1 second
-		motdet=1;
-	}
-	first = 1; //indicate we've visited function at least once
-	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
-	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
-}
+//void SPI1_IRQHandler(void){
+//	flip^=1; // for full-second check
+//	if(first && flip){
+//		//if we've been to the function at least once
+//		increaseSec(); // increase time by 1 second
+//		motdet=1;
+//	}
+//	first = 1; //indicate we've visited function at least once
+//	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
+//	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
+//}
 // ------------------------------------------------------ Main
 int main(void)
 {
     // Enable GPIOA clock (p. 148 in the datasheet)
-    RCC->AHBENR |=0x000A0000;
+    RCC->AHBENR |=0x000E0000;
     RCC->APB1ENR |=  0x00000001; // enable TMR2
     RCC->APB2ENR|=  0x00000001; // enable SYSCFG Clock
 // ------------------------------------------------------

@@ -1,6 +1,5 @@
 core_cm4.h:1688:22:__NVIC_EnableIRQ	16	static
 main.c:19:7:returnHour	16	static
 main.c:26:5:inputTime	16	static
-main.c:33:6:EXTI15_10_IRQHandler	16	static
 main.c:41:6:USART2_EXTI26_IRQHandler	16	static
 main.c:64:5:main	24	static
