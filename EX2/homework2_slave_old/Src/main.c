@@ -151,6 +151,10 @@ void TIM2_IRQHandler(void){
 
 }
 
+void SPI1_IRQHandler(void){
+	// todo
+}
+
 //// ------------------------------------------------------Timer handler function
 //void SPI1_IRQHandler(void){
 //	flip^=1; // for full-second check
@@ -190,6 +194,7 @@ int main(void)
     TIM2->ARR= 8000000/2; // same as writing TIM2->ARR =0x003D0900*2 = the timer2 interrupt speed
     TIM2->CR1|=0x00000001; // TIM2 counter enable
     NVIC_EnableIRQ(TIM2_IRQn); //TIM2 interrupt function enable
+    NVIC_EnableIRQ(SPI1_IRQn); //TIM2 interrupt function enable
 //    NVIC_EnableIRQ(EXTI15_10_IRQn); //TIM2 interrupt function enable
 
 
@@ -200,6 +205,7 @@ int main(void)
 //    NVIC_EnableIRQ(SPI1_IRQn);
 
     print("Hello!\nThis is the secondary machine in the 2-machine exercise you are running!\n");
+//    SPI1->DR = 0x55;
     while(1)
     {
     	if((GPIOA->IDR & 0x00000002)){

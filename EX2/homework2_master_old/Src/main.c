@@ -8,6 +8,11 @@
 #include "usart2.h"
 #include "spi1.h"
 
+
+char timeFromSlave[9] = "";
+
+
+
 /*
  * 8mhz= 8*(10**6)/sec
  * 4*10**6 = time = 3D0900
@@ -54,6 +59,14 @@ void USART2_EXTI26_IRQHandler(void){
 
 }
 
+
+//--------------------------------------------------------SPI1 interrupt handler function
+void SPI1_IRQHandler(void){
+	memset(timeFromSlave,'\0',9);
+	SPI_Receive(timeFromSlave,8);
+}
+
+
 //// ------------------------------------------------------Timer handler function
 //void TIM2_IRQHandler(void){
 ////	increaseSec(); // increase time by 1 second
@@ -86,19 +99,25 @@ int main(void)
     USART2_init();
 	SPI1_init();
     NVIC_EnableIRQ(USART2_IRQn); //usart2 rx interrupt function enable
+    NVIC_EnableIRQ(SPI1_IRQn); //spi1 interrupt function enable
     print("Hello!\nThis is the primary machine in the 2-machine exercise you are running!\n");
     print("To change time please input in the following format  it:\t%s\n",format);
-    char timeFromSlave[9];
+	memset(timeFromSlave,'\0',9);
+//	SPI1->DR = 0;
+//	while((SPI1->DR&0x3)!=0x3){}
+//	int x = SPI1->DR;
+//	print("%d",x);
     while(1)
     {
-    	memset(timeFromSlave,'\0',9);
-    	if(!((SPI1->SR) &(1<<0))){
-    		SPI_Receive(timeFromSlave,8);
-			if(timeFromSlave[0] != '\0'){
-				print("%s\n",timeFromSlave);
-			}
-			SPI1->SR & (0<<0);
-    	}
+
+//    	if(!((SPI1->SR) &(1<<0))){
+//    		SPI_Receive(timeFromSlave,8);
+		if(*timeFromSlave != '\0'){
+			print("%s\n",timeFromSlave);
+			memset(timeFromSlave,'\0',9);
+		}
+//			SPI1->SR & (0<<0);
+//    	}
     }
 
 }

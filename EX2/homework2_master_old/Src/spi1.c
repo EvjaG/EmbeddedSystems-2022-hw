@@ -61,7 +61,7 @@ void SPI1_init(void)
 //	//SPI_CR2_FRXTH -> FIFO reception Threshold
 //	SPI1->CR2 |= SPI_CR2_TXEIE| SPI_CR2_RXNEIE | SPI_CR2_DS_0 |SPI_CR2_DS_1 | SPI_CR2_DS_2 | SPI_CR2_FRXTH;
 
-	SPI1->CR2 |= 0x000000004;
+	SPI1->CR2 |= 0x000000044;
 	SPI1->CR1 |= 0x00000007C;
 
 
@@ -136,6 +136,7 @@ void SPI_Receive (char *data, int size)
 		*data++ = (SPI1->DR);
 		size--;
 	}
+	SPI1->DR = 0;  // send dummy data
 }
 
 

@@ -143,6 +143,8 @@ void SPI_Receive (char *data, int size)
 	    *data++ = (SPI1->DR);
 		size--;
 	}
+
+	SPI1->DR = 0;  // send dummy data
 }
 
 
