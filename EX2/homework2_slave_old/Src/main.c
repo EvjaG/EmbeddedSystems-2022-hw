@@ -118,6 +118,15 @@ int inputTime(char* input){
 }
 
 
+
+
+void send_clock(){
+	GPIOA->ODR &= ~0x00000100; // Write 0 to A0
+	SPI_Transmit(returnHour(), 8);
+	GPIOA->ODR |= 0x00000100; // Write 0x00000001 to A0
+}
+
+
 // ------------------------------------------------------ Button Handler function
 void EXTI15_10_IRQHandler(){ // turning off the interrupt flag
 	EXTI->PR |= 0x00002000;
@@ -137,13 +146,7 @@ void TIM2_IRQHandler(void){
 		motdet=1;
 	}
 	first = 1; //indicate we've visited function at least once
-	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
-
-	/// to delete{
-//	char* time = returnHour();
-//	SPI_Transmit(time,8);
-
-	//}
+//	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
 
 
 	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
@@ -151,23 +154,8 @@ void TIM2_IRQHandler(void){
 
 }
 
-void SPI1_IRQHandler(void){
-	// todo
-}
 
-//// ------------------------------------------------------Timer handler function
-//void SPI1_IRQHandler(void){
-//	flip^=1; // for full-second check
-//	if(first && flip){
-//		//if we've been to the function at least once
-//		increaseSec(); // increase time by 1 second
-//		motdet=1;
-//	}
-//	first = 1; //indicate we've visited function at least once
-//	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
-//	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
-//}
-// ------------------------------------------------------ Main
+//------------------------------------------------------ Main
 int main(void)
 {
     // Enable GPIOA clock (p. 148 in the datasheet)
@@ -180,12 +168,11 @@ int main(void)
     EXTI->IMR |= 0x00002000; // enable interrupt GPIOC13
 // ------------------------------------------------------
     SYSCFG->EXTICR[3] |= 0x00000020;
-//    NVIC_EnableIRQ(EXTI15_10_IRQn); // enable button - core interrupt
 // ------------------------------------------------------
-    // Configure GPIOA pin 5 as output.
-    GPIOA->MODER |= 0x00000400;
+    // Configure GPIOA pin 5,0 as output .
+    GPIOA->MODER |= 0x00010400;
     // Configure GPIOA pin 5 as push pull.
-    GPIOA->OTYPER &= ~0x00000020; // (1 << 5);
+    GPIOA->OTYPER &= ~0x00000121; // (1 << 5);
 
 
 
@@ -194,25 +181,28 @@ int main(void)
     TIM2->ARR= 8000000/2; // same as writing TIM2->ARR =0x003D0900*2 = the timer2 interrupt speed
     TIM2->CR1|=0x00000001; // TIM2 counter enable
     NVIC_EnableIRQ(TIM2_IRQn); //TIM2 interrupt function enable
-    NVIC_EnableIRQ(SPI1_IRQn); //TIM2 interrupt function enable
-//    NVIC_EnableIRQ(EXTI15_10_IRQn); //TIM2 interrupt function enable
 
 
-    GPIOA->IDR=0;
+    GPIOA->ODR=0;
 
     USART2_init();
     SPI1_init();
-//    NVIC_EnableIRQ(SPI1_IRQn);
-
     print("Hello!\nThis is the secondary machine in the 2-machine exercise you are running!\n");
-//    SPI1->DR = 0x55;
+
     while(1)
     {
-    	if((GPIOA->IDR & 0x00000002)){
-    		while(!motdet);
-    		print("MotDet ON!");
-    		SPI_Transmit(returnHour(), 8);
-			motdet=0;
+    	if((GPIOA->IDR&0x2)==0x2){
+    		if(motdet){
+				print("MotDet ON!");
+				send_clock();
+				motdet=0;
+    		}
+    	}
+    	if((SPI1->SR&0x3)==0x3){
+    		memset(SPI_A_Buffer,'\0',9);
+    		SPI_Receive(SPI_A_Buffer,8);
+    		inputTime(SPI_A_Buffer);
+    		print("clock received\n");
     	}
 
     }

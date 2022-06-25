@@ -10,6 +10,7 @@
 
 
 char timeFromSlave[9] = "";
+static volatile uint8_t X;
 
 
 
@@ -42,6 +43,7 @@ int inputTime(char* input){
 //	print("%s\n",toPrint);
 //	free(toPrint);
 //}
+
 //--------------------------------------------------------UART input handler function
 void USART2_EXTI26_IRQHandler(void){
 
@@ -67,12 +69,6 @@ void SPI1_IRQHandler(void){
 }
 
 
-//// ------------------------------------------------------Timer handler function
-//void TIM2_IRQHandler(void){
-////	increaseSec(); // increase time by 1 second
-//	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
-//	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
-//}
 // ------------------------------------------------------ Main
 int main(void)
 {
@@ -88,36 +84,31 @@ int main(void)
     SYSCFG->EXTICR[3] |= 0x00000020;
 //    NVIC_EnableIRQ(EXTI15_10_IRQn); // enable button - core interrupt
 // ------------------------------------------------------
-    // Configure GPIOA pin 5 as output.
+    // Configure GPIOA pin 5 as output, 0 as input.
     GPIOA->MODER |= 0x00000400;
+    // Configure GPIOA pin 0 as input.
+//    GPIOA->MODER &= ~0x00000003;
     // Configure GPIOA pin 5 as push pull.
-    GPIOA->OTYPER &= ~0x00000020; // (1 << 5);
-//    TIM2->ARR= 8000000; // same as writing TIM2->ARR =0x003D0900*2 = the timer2 interrupt speed
-//    TIM2->CR1|=0x00000001; // TIM2 counter enable
-//    NVIC_EnableIRQ(TIM2_IRQn); //TIM2 interrupt function enable
+    GPIOA->OTYPER &= ~0x00000021; // (1 << 5);
+//    GPIOA->ODR &= ~0x1;
 
     USART2_init();
 	SPI1_init();
     NVIC_EnableIRQ(USART2_IRQn); //usart2 rx interrupt function enable
-    NVIC_EnableIRQ(SPI1_IRQn); //spi1 interrupt function enable
     print("Hello!\nThis is the primary machine in the 2-machine exercise you are running!\n");
     print("To change time please input in the following format  it:\t%s\n",format);
 	memset(timeFromSlave,'\0',9);
-//	SPI1->DR = 0;
-//	while((SPI1->DR&0x3)!=0x3){}
-//	int x = SPI1->DR;
-//	print("%d",x);
-    while(1)
-    {
 
-//    	if(!((SPI1->SR) &(1<<0))){
-//    		SPI_Receive(timeFromSlave,8);
-		if(*timeFromSlave != '\0'){
-			print("%s\n",timeFromSlave);
+	while(1){
+		if((GPIOA->IDR&0x100)==0x100){
+			SPI_Receive(timeFromSlave, 8);
+			print("We just detect a movement at %s\n",timeFromSlave);
 			memset(timeFromSlave,'\0',9);
+
 		}
-//			SPI1->SR & (0<<0);
-//    	}
-    }
+		else{
+			int i = 1;
+		}
+	}
 
 }
