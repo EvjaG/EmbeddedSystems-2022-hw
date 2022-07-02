@@ -44,7 +44,6 @@ void SPI_Transmit (char *data, int size)
 	   uint8_t temp = SPI1->DR;
 	   i++;
 	}
-
 }
 
 void SPI_Receive (char *data, int size)

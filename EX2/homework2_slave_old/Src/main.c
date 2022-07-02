@@ -64,25 +64,7 @@ void increaseSec(){
 //this will be the function from reading the input from the user
 //return 0 if fail, otherwise return 1
 int inputTime(char* input){
-	//parse string - check for correct format
-	int len;
-	int colon_count=0;
-	int func_count=0;
-	int space_count=0;
-	for (len = 0; input[len] != '\0'; len++){ // were checking to see what punctual the user used in the hour he put inside
-		if(input[len]==':') colon_count++;
-		if(input[len]==' ') space_count++;
-		if(input[len]=='-'){
-			if(len>0 || func_count)
-				return 0;
-			func_count++;
-		}
 
-	}
-	if(colon_count != 2 || func_count != 1 || input[0] != '-') return -1; // we check if the input stands in the format we want if not we return a msg.
-	//if func call not in system
-	if(strstr(input,"-time")==NULL)
-		return -1;
 
 	//check string inputs
 	char *token = strtok(input, " "); // doin manipulation over the string we recieved. (swaping all the panctual to " ")
@@ -121,9 +103,11 @@ int inputTime(char* input){
 
 
 void send_clock(){
-	GPIOA->ODR &= ~0x00000100; // Write 0 to A0
+//	GPIOA->ODR |= 0x00000100; // Write 0x00000001 to A0
+//	GPIOA->ODR &= ~0x00000100; // Write 0 to A0
+	GPIOA->ODR ^= 0x00000100;
+	print("in send_clock time is = %s\n",returnHour());
 	SPI_Transmit(returnHour(), 8);
-	GPIOA->ODR |= 0x00000100; // Write 0x00000001 to A0
 }
 
 
@@ -131,7 +115,7 @@ void send_clock(){
 void EXTI15_10_IRQHandler(){ // turning off the interrupt flag
 	EXTI->PR |= 0x00002000;
 	char* toPrint = returnHour(); // printing the current time
-	SPI_Transmit(str,8);
+//	SPI_Transmit(str,8);
 	print("%s\n",toPrint);
 	free(toPrint);
 }
@@ -146,7 +130,7 @@ void TIM2_IRQHandler(void){
 		motdet=1;
 	}
 	first = 1; //indicate we've visited function at least once
-//	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
+	GPIOA->ODR ^= 0x00000020; // Write 0x00000020 to the address 0x48000014
 
 
 	TIM2->SR&=0XFFFFFFFE; // reenable timer interrupt
@@ -200,9 +184,14 @@ int main(void)
     	}
     	if((SPI1->SR&0x3)==0x3){
     		memset(SPI_A_Buffer,'\0',9);
+//    		print("going to spi recive");
+    		char * copySPI_A_Buffer = SPI_A_Buffer;
     		SPI_Receive(SPI_A_Buffer,8);
-    		inputTime(SPI_A_Buffer);
-    		print("clock received\n");
+//    		print("return from spi recive");
+    		if(copySPI_A_Buffer[0] != '\0'){
+    			print("time recived = %s\n",copySPI_A_Buffer);
+    			inputTime(copySPI_A_Buffer);
+    		}
     	}
 
     }
