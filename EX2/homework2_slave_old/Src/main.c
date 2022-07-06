@@ -186,9 +186,9 @@ int main(void)
     		memset(SPI_A_Buffer,'\0',9);
 //    		print("going to spi recive");
     		char * copySPI_A_Buffer = SPI_A_Buffer;
-    		SPI_Receive(SPI_A_Buffer,8);
+    		SPI_Receive(SPI_A_Buffer,6);
 //    		print("return from spi recive");
-    		if(copySPI_A_Buffer[0] != '\0'){
+    		if(SPI_A_Buffer[0] != '\0'){
     			print("time recived = %s\n",copySPI_A_Buffer);
     			inputTime(copySPI_A_Buffer);
     		}

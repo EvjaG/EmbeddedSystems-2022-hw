@@ -92,11 +92,17 @@ char* returnHour(){
 //this will be the function from reading the input from the user
 //return 0 if fail, otherwise return 1
 int inputTime(char* input){
-//	print("in inputTime \n");
+	char * tosend = (char*) malloc((sizeof(char)*7));
+	for(int i = 0,j=6;i<6;j++){
+		if(input[j]!= ':'){
+			tosend[i] = input[j];
+			i++;
+		}
+	}
+	tosend[6] = '\0';
+	print("in inputTime tosend is = %s\n",tosend);
 	if(validateTime(input) == 1){
-//		print("in inputTime validation\n");
-		SPI_Transmit(input+6,8);
-//		print("in inputTime after trans\n");
+		SPI_Transmit(tosend,6);
 		return 1;
 	}
 	else{

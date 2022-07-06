@@ -36,9 +36,9 @@ void SPI_Transmit (char *data, int size)
 
 	int i=0;
 	while (i<size){
-	   SPI1->DR = data[i];  // load the data into the Data Register
+	   SPI1->DR = (uint8_t)data[i];  // load the data into the Data Register
 	   print("in SPI_Transmit data[%d] = %c\n",i,data[i]);
-	   while((SPI1->SR&0x3)!=0x3){}
+	   while((SPI1->SR&0x3)!=0x3 && (SPI1->SR&0x80)!=0x80){}
 	   uint8_t temp = SPI1->DR;
 	   i++;
 	}

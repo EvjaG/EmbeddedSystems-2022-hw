@@ -48,12 +48,18 @@ void SPI_Transmit (char *data, int size)
 
 void SPI_Receive (char *data, int size)
 {
+	int copy = size;
 	while (size){
 		SPI1->DR = 0;  // send dummy data
 		while((SPI1->SR&0x3)!=0x3){}
-		*data++ = (SPI1->DR);
+		*data = (uint8_t)(SPI1->DR);
+		data++;
 		size--;
+		if(*(data-1)!= '\0'){
+			print("char received = %c",(uint8_t)*(data-1));
+		}
 	}
+	data = data - copy;
 }
 
 
