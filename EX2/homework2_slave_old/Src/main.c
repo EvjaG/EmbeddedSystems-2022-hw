@@ -21,7 +21,10 @@ int flip=1;
 int first=0;
 int motdet = 1;
 
-char* str = "1234567";
+char * str = "1234567";
+char SHour[3] = {'1','2','\0'};
+char SMinute[3] = {'1','2','\0'};
+char SSecond[3] = {'1','2','\0'};
 
 //this will be the button interrupt function
 char* returnHour(){
@@ -65,37 +68,54 @@ void increaseSec(){
 //return 0 if fail, otherwise return 1
 int inputTime(char* input){
 
+//
+//	//check string inputs
+//
+//	int j=0;
+//	int modArr[3]={24,60,60}; // we put each digit in the right place in our array and perfrmoing MOD action to make sure the hour is in bounds
+//	int timeArr[3]={0,0,0};
+//	char ** digit = {{'c','c','\0'},{'c','c','\0'},{'c','c','\0'}};
+//	for(int i = 0;i< 3;i++){
+//		for(int j = 0; j < 2;j++){
+//			digit[i][j] = input[(i*2)+j];
+//		}
+//	}
 
-	//check string inputs
-	char *token = strtok(input, " "); // doin manipulation over the string we recieved. (swaping all the panctual to " ")
-	token = strtok(NULL, ":");
-
-	int j=0;
-	int modArr[3]={24,60,60}; // we put each digit in the right place in our array and perfrmoing MOD action to make sure the hour is in bounds
-	int timeArr[3]={0,0,0};
-
-	while (token != NULL)
-	{
-        int sum=0;
-		for(int i=0;i<2;i++){
-			int c = token[i];
-			if(c<48 || c>57) //check if char is digit
-				return 0;
-			c-=48;
-			sum+=c*power(10, 2-(i+1));
-		}
-		if(sum<0 || sum>=modArr[j])
-			return 0;
-//		printf("sum:\t%d\n",sum);
-		timeArr[j]=sum;
-
-		token = strtok(NULL, ":");
-		j++;
-	}
+//	for(int k = 0;k<3;k++ ){
+//		char *  token = digit[k];
+//        int sum=0;
+//		for(int i=0;i<2;i++){
+//			int c = token[i];
+//			if(c<48 || c>57) //check if char is digit
+//				return 0;
+//			c-=48;
+//			sum+=c*power(10, 2-(i+1));
+//		}
+//		if(sum<0 || sum>=modArr[j])
+//			return 0;
+////		printf("sum:\t%d\n",sum);
+//		timeArr[j]=sum;
+//
+//		j++;
+//	}
 	//if no errors, change time vars accordingly
-	hour=timeArr[0];
-	minute=timeArr[1];
-	second=timeArr[2];
+//	print("before input[0]; %c",input[0]);
+//	print("before SHour[0]; %c",SHour[0]);
+	SHour[0] = input[0];
+//	print("after input[0];");
+	SHour[1] = input[1];
+//	print("after input[1];");
+	SMinute[0] = input[2];
+//	print("after input[2];");
+	SMinute[1] = input[3];
+//	print("after input[3];");
+	SSecond[0] = input[4];
+	SSecond[1] = input[5];
+	hour=atoi(SHour);
+	minute=atoi(SMinute);
+	second=atoi(SSecond);
+//	minute=atoi(input[2])*10+atoi(input[3]);
+//	second=atoi(input[4])*10+atoi(input[5]);
 	return 1;
 }
 
@@ -106,7 +126,7 @@ void send_clock(){
 //	GPIOA->ODR |= 0x00000100; // Write 0x00000001 to A0
 //	GPIOA->ODR &= ~0x00000100; // Write 0 to A0
 	GPIOA->ODR ^= 0x00000100;
-	print("in send_clock time is = %s\n",returnHour());
+//	print("in send_clock time is = %s\n",returnHour());
 	SPI_Transmit(returnHour(), 8);
 }
 
@@ -177,21 +197,19 @@ int main(void)
     {
     	if((GPIOA->IDR&0x2)==0x2){
     		if(motdet){
-				print("MotDet ON!");
+//				print("MotDet ON!");
 				send_clock();
 				motdet=0;
     		}
     	}
     	if((SPI1->SR&0x3)==0x3){
-    		memset(SPI_A_Buffer,'\0',9);
-//    		print("going to spi recive");
-    		char * copySPI_A_Buffer = SPI_A_Buffer;
-    		SPI_Receive(SPI_A_Buffer,6);
-//    		print("return from spi recive");
-    		if(SPI_A_Buffer[0] != '\0'){
-    			print("time recived = %s\n",copySPI_A_Buffer);
-    			inputTime(copySPI_A_Buffer);
+    		char * res = SPI_Receive(6);
+    		if(res[0] != '\0'){
+    			print("time received = %s\n",res);
+    			sprintf(SPI_B_Buffer,"%s",res);
+    			inputTime(SPI_B_Buffer);
     		}
+    		free(res);
     	}
 
     }

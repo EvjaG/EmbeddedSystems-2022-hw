@@ -66,6 +66,6 @@ Input:
 void SPI_Transmit (char *data, int size);
 
 
-void SPI_Receive (char *data, int size);
+char* SPI_Receive ( int size);
 
 #endif /* SPI1_H_ */

@@ -46,20 +46,44 @@ void SPI_Transmit (char *data, int size)
 	}
 }
 
-void SPI_Receive (char *data, int size)
-{
-	int copy = size;
+//void SPI_Receive (char *data, int size)
+//{
+//	int copy = size;
+//	while (size){
+//		SPI1->DR = 0;  // send dummy data
+//		while((SPI1->SR&0x3)!=0x3){}
+//		*data = (uint8_t)(SPI1->DR);
+//		data++;
+//		size--;
+//		if(*(data-1)!= '\0'){
+//			print("char received = %c\n",(uint8_t)*(data-1));
+//		}
+//	}
+//	data = data - copy+1;
+//}
+
+char* SPI_Receive ( int size){
+
+	char * data = (char*) malloc(sizeof(char)*(size+1));
+	memset(data,'\0',(size+1));
+	char * copyStartArrayToReturn = data;
 	while (size){
-		SPI1->DR = 0;  // send dummy data
+//		SPI1->DR = 0;  // send dummy data
 		while((SPI1->SR&0x3)!=0x3){}
 		*data = (uint8_t)(SPI1->DR);
+		if(*(data)!= '\0'){
+//			print("char received = %c size is = %d\n",(uint8_t)*(data),size);
+		}
+		else{
+			return copyStartArrayToReturn;
+		}
 		data++;
 		size--;
-		if(*(data-1)!= '\0'){
-			print("char received = %c",(uint8_t)*(data-1));
-		}
 	}
-	data = data - copy;
+	return copyStartArrayToReturn;
 }
+
+
+
 
 
