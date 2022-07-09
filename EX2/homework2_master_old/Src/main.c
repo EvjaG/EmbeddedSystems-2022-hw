@@ -103,10 +103,12 @@ int inputTime(char* input){
 	print("in inputTime tosend is = %s\n",tosend);
 	if(validateTime(input) == 1){
 		SPI_Transmit(tosend,6);
+		free(tosend);
 		return 1;
 	}
 	else{
 //		print("in inputTime validation failed\n");
+		free(tosend);
 		return -1;
 	}
 }
