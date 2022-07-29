@@ -1,0 +1,5 @@
+"./Src/main.o"
+"./Src/motion_detector.o"
+"./Src/spi1.o"
+"./Src/usart2.o"
+"./Startup/startup_stm32f303retx.o"

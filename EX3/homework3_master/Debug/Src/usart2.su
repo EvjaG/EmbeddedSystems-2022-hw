@@ -1,0 +1,4 @@
+usart2.c:14:6:print	16	static
+usart2.c:25:6:USART2_init	8	static
+usart2.c:47:6:USART2_printCharacter	16	static
+usart2.c:56:6:USART2_print	16	static
