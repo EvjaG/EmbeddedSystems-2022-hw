@@ -33,34 +33,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := homework2_master
+BUILD_ARTIFACT_NAME := homework3_master
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-homework2_master.elf \
+homework3_master.elf \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-homework2_master.list \
+homework3_master.list \
 
 OBJCOPY_BIN += \
-homework2_master.bin \
+homework3_master.bin \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: homework2_master.elf secondary-outputs
+main-build: homework3_master.elf secondary-outputs
 
 # Tool invocations
-homework2_master.elf: $(OBJS) $(USER_OBJS) C:\Users\MOSHE\STM32CubeIDE\workspace_1.8.0\EmbeddedSystems-2022-hw\EX2\homework2_master_old\STM32F303RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "homework2_master.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\MOSHE\STM32CubeIDE\workspace_1.8.0\EmbeddedSystems-2022-hw\EX2\homework2_master_old\STM32F303RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="homework2_master.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+homework3_master.elf: $(OBJS) $(USER_OBJS) C:\Users\MOSHE\STM32CubeIDE\workspace_1.8.0\EmbeddedSystems-2022-hw\EX3\homework3_master\STM32F303RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "homework3_master.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\MOSHE\STM32CubeIDE\workspace_1.8.0\EmbeddedSystems-2022-hw\EX3\homework3_master\STM32F303RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="homework3_master.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -69,19 +69,19 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-homework2_master.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "homework2_master.list"
+homework3_master.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "homework3_master.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-homework2_master.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "homework2_master.bin"
+homework3_master.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "homework3_master.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) default.size.stdout homework2_master.bin homework2_master.elf homework2_master.list
+	-$(RM) default.size.stdout homework3_master.bin homework3_master.elf homework3_master.list
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)

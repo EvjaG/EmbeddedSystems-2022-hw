@@ -1,20 +1,21 @@
 /*
- * spi2.h
+ * USART3.h
  *
  *  Created on: Mar 17, 2021
  *      Author: elien
  */
 
-
-#ifndef SPI1_H_
-#define SPI1_H_
+#define RX_BUF3_SIZE 20
+char RX_BUF3[RX_BUF3_SIZE];
+int	RX_BUF3_PLACE;
+#ifndef USART3_H_
+#define USART3_H_
 #include <string.h>
 /******************************************************************************
 Definitions
 ******************************************************************************/
-#define SPI1_SIZE_OF_SPI_BUFFER 128
-static char SPI_A_Buffer[SPI1_SIZE_OF_SPI_BUFFER];
-static char SPI_B_Buffer[SPI1_SIZE_OF_SPI_BUFFER];
+#define USART3_SIZE_OF_PRINT_BUFFER 128
+
 
 
 
@@ -26,46 +27,32 @@ Exported functions
 print
 Description: Functions as the stdio printf function.
 Note:
-  This function uses a buffer, whose size is determined by spi2_SIZE_OF_
+  This function uses a buffer, whose size is determined by USART3_SIZE_OF_
   PRINT_BUFFER. Therefore, it is not reentrant.
 ******************************************************************************/
-void send(char *p_format, ...);
+void print3(char *p_format, ...);
 
 /******************************************************************************
-spi2_init
-Description: Initializes spi2 on GPIOs PA2 and PA3,
+USART3_init
+Description: Initializes USART3 on GPIOs PA2 and PA3,
   with a baud rate of 9600.
 ******************************************************************************/
-void SPI1_init(void);
+void USART3_init(void);
 
 /******************************************************************************
-spi2_print
+USART3_print
 Description: Prints a '\0'-terminated sequence of characters.
 Input:
   p_data: The sequence to print.
 ******************************************************************************/
-void SPI1_print(const char *p_data);
+void USART3_print(const char *p_data);
 
 /******************************************************************************
-spi2_printCharacter
+USART3_printCharacter
 Description: Prints one character.
 Input:
   c: The character to print.
 ******************************************************************************/
-void SPI1_printCharacter(char c);
+void USART3_printCharacter(char c);
 
-/******************************************************************************
-SPI1_send
-Description: send all chars to master.
-Input:
-  c: The character to print.
-******************************************************************************/
-//void SPI1_send(const char *p_data);
-
-
-void SPI_Transmit (char *data, int size);
-
-
-void SPI_Receive (char *data, int size);
-
-#endif /* SPI1_H_ */
+#endif /* USART3_H_ */

@@ -1,0 +1,4 @@
+usart3.c:14:6:print3	16	static
+usart3.c:25:6:USART3_init	8	static
+usart3.c:47:6:USART3_printCharacter	16	static
+usart3.c:56:6:USART3_print	16	static

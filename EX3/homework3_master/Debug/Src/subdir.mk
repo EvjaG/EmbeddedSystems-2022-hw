@@ -6,18 +6,21 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../Src/main.c \
-../Src/spi1.c \
-../Src/usart2.c 
+../Src/modem.c \
+../Src/usart2.c \
+../Src/usart3.c 
 
 OBJS += \
 ./Src/main.o \
-./Src/spi1.o \
-./Src/usart2.o 
+./Src/modem.o \
+./Src/usart2.o \
+./Src/usart3.o 
 
 C_DEPS += \
 ./Src/main.d \
-./Src/spi1.d \
-./Src/usart2.d 
+./Src/modem.d \
+./Src/usart2.d \
+./Src/usart3.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -27,7 +30,7 @@ Src/%.o: ../Src/%.c Src/subdir.mk
 clean: clean-Src
 
 clean-Src:
-	-$(RM) ./Src/main.d ./Src/main.o ./Src/spi1.d ./Src/spi1.o ./Src/usart2.d ./Src/usart2.o
+	-$(RM) ./Src/main.d ./Src/main.o ./Src/modem.d ./Src/modem.o ./Src/usart2.d ./Src/usart2.o ./Src/usart3.d ./Src/usart3.o
 
 .PHONY: clean-Src
 

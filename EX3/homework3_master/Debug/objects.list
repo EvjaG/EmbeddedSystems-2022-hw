@@ -1,4 +1,5 @@
 "./Src/main.o"
-"./Src/spi1.o"
+"./Src/modem.o"
 "./Src/usart2.o"
+"./Src/usart3.o"
 "./Startup/startup_stm32f303retx.o"

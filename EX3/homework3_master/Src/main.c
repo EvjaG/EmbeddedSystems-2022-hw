@@ -7,7 +7,7 @@
 #include <string.h>
 #include "stm32f303xe.h"
 #include "usart2.h"
-#include "spi1.h"
+#include "usart3.h"
 
 
 char timeFromSlave[9] = "";
@@ -58,7 +58,7 @@ int validateTime(char* input){
 
 	int j=0;
 	int modArr[3]={24,60,60}; // we put each digit in the right place in our array and perfrmoing MOD action to make sure the hour is in bounds
-	int timeArr[3]={0,0,0};
+//	int timeArr[3]={0,0,0};
 
 	while (token != NULL)
 	{
@@ -73,7 +73,7 @@ int validateTime(char* input){
 		if(sum<0 || sum>=modArr[j])
 			return 0;
 //		printf("sum:\t%d\n",sum);
-		timeArr[j]=sum;
+//		timeArr[j]=sum;
 
 		token = strtok(NULL, ":");
 		j++;
@@ -84,11 +84,11 @@ int validateTime(char* input){
 
 
 //this will be the button interrupt function
-char* returnHour(){
-	char timeFromSlave[8];
-    SPI_Receive(timeFromSlave,8);
-	return timeFromSlave;
-}
+//char* returnHour(){
+//	char timeFromSlave[8];
+////    SPI_Receive(timeFromSlave,8);
+//	return timeFromSlave;
+//}
 //this will be the function from reading the input from the user
 //return 0 if fail, otherwise return 1
 int inputTime(char* input){
@@ -102,7 +102,7 @@ int inputTime(char* input){
 	tosend[6] = '\0';
 	print("in inputTime tosend is = %s\n",tosend);
 	if(validateTime(input) == 1){
-		SPI_Transmit(tosend,6);
+//		SPI_Transmit(tosend,6);
 		free(tosend);
 		return 1;
 	}
@@ -118,12 +118,12 @@ int inputTime(char* input){
 void EXTI15_10_IRQHandler(){
 	EXTI->PR |= 0x00002000;
 	// TODO - function to retrieve time from secondary machine
-	char* toPrint = returnHour();
-	print("%s\n",toPrint);
-	free(toPrint);
+////	char* toPrint = returnHour();
+//	print("%s\n",toPrint);
+//	free(toPrint);
 }
 
-//--------------------------------------------------------UART input handler function
+//--------------------------------------------------------UART2 input handler function
 void USART2_EXTI26_IRQHandler(void){
 
 	if(RX_BUF_PLACE >= RX_BUF_SIZE)
@@ -140,12 +140,22 @@ void USART2_EXTI26_IRQHandler(void){
 
 }
 
+//--------------------------------------------------------UART3 input handler function
+void USART3_EXTI26_IRQHandler(void){
 
-//--------------------------------------------------------SPI1 interrupt handler function
-void SPI1_IRQHandler(void){
-	memset(timeFromSlave,'\0',9);
-	SPI_Receive(timeFromSlave,8);
+	if(RX_BUF3_PLACE >= RX_BUF3_SIZE)
+		RX_BUF3_PLACE=0;
+	char newChar = (uint8_t)USART3->RDR;
+	if(newChar==(uint8_t)'\0' || newChar==(uint8_t)'\n' || newChar==(uint8_t)'\r'){
+		RX_BUF3_PLACE=0;
+		memset(RX_BUF3,'\0',RX_BUF3_SIZE);
+		print("%s\n",RX_BUF3);
+		return;
+	}
+	RX_BUF3[RX_BUF3_PLACE++]=newChar;
+
 }
+
 
 
 // ------------------------------------------------------ Main
@@ -172,7 +182,8 @@ int main(void)
 //    GPIOA->ODR &= ~0x1;
 
     USART2_init();
-	SPI1_init();
+    USART3_init();
+//	SPI1_init();
     NVIC_EnableIRQ(USART2_IRQn); //usart2 rx interrupt function enable
     print("Hello!\nThis is the primary machine in the 2-machine exercise you are running!\n");
     print("To change time please input in the following format  it:\t%s\n",format);
@@ -187,7 +198,7 @@ int main(void)
 			kdet = 0;
 		}
 		if(kdet_prev != kdet){
-			SPI_Receive(timeFromSlave, 8);
+//			SPI_Receive(timeFromSlave, 8);
 			if(timeFromSlave[2] == ':'){
 				print("We just detect a movement at %s\n",timeFromSlave);
 				memset(timeFromSlave,'\0',9);
