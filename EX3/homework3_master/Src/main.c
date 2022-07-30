@@ -8,6 +8,7 @@
 #include "stm32f303xe.h"
 #include "usart2.h"
 #include "usart3.h"
+#include "iwdg.h"
 
 
 char timeFromSlave[9] = "";
@@ -183,28 +184,37 @@ int main(void)
 
     USART2_init();
     USART3_init();
+    IWDG_init();
 //	SPI1_init();
     NVIC_EnableIRQ(USART2_IRQn); //usart2 rx interrupt function enable
     print("Hello!\nThis is the primary machine in the 2-machine exercise you are running!\n");
-    print("To change time please input in the following format  it:\t%s\n",format);
-	memset(timeFromSlave,'\0',9);
+    int count = 0;
+    while(1){
+    	print("count: %d\n",count);
+    	count++;
+    	if(count % 500 == 0)
+    		IWDG_refresh();
+    }
 
-	while(1){
-		memset(timeFromSlave,'\0',9);
-		if((GPIOA->IDR&0x100)==0x100){
-			kdet = 1;
-		}
-		else{
-			kdet = 0;
-		}
-		if(kdet_prev != kdet){
-//			SPI_Receive(timeFromSlave, 8);
-			if(timeFromSlave[2] == ':'){
-				print("We just detect a movement at %s\n",timeFromSlave);
-				memset(timeFromSlave,'\0',9);
-			}
-			kdet_prev = kdet;
-		}
-	}
+//    print("To change time please input in the following format  it:\t%s\n",format);
+//	memset(timeFromSlave,'\0',9);
+//
+//	while(1){
+//		memset(timeFromSlave,'\0',9);
+//		if((GPIOA->IDR&0x100)==0x100){
+//			kdet = 1;
+//		}
+//		else{
+//			kdet = 0;
+//		}
+//		if(kdet_prev != kdet){
+////			SPI_Receive(timeFromSlave, 8);
+//			if(timeFromSlave[2] == ':'){
+//				print("We just detect a movement at %s\n",timeFromSlave);
+//				memset(timeFromSlave,'\0',9);
+//			}
+//			kdet_prev = kdet;
+//		}
+//	}
 
 }
