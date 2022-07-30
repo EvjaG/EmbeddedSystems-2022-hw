@@ -6,8 +6,8 @@
  */
 
 #define RX_BUF3_SIZE 20
-char RX_BUF3[RX_BUF3_SIZE];
-int	RX_BUF3_PLACE;
+extern char RX_BUF3[RX_BUF3_SIZE];
+extern int	RX_BUF3_PLACE;
 #ifndef USART3_H_
 #define USART3_H_
 #include <string.h>

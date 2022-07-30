@@ -3,7 +3,8 @@
 #include "stm32f303xe.h"
 #include "USART3.h"
 
-
+char RX_BUF3[RX_BUF3_SIZE];
+int	RX_BUF3_PLACE;
 
 // This buffer is used by the printf-like print function.
 static char A_Buffer[USART3_SIZE_OF_PRINT_BUFFER];

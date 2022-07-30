@@ -7,7 +7,8 @@
 
 // This buffer is used by the printf-like print function.
 static char A_Buffer[USART2_SIZE_OF_PRINT_BUFFER];
-
+char RX_BUF[RX_BUF_SIZE];
+int	RX_BUF_PLACE;
 
 
 
